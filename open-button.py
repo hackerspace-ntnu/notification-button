@@ -1,10 +1,17 @@
 import RPi.GPIO as GPIO
-import httplib, time
+import httplib, time, sys
+
+from yoapi import yo
+
+from secret import YO_API_KEY
 
 TIMEOUT = 0.1 #seconds
 API_HOST = "hackerspace.idi.ntnu.no"
 API_ENDPOINT = "/api/door/push"
 GPIO_PIN = 15 
+
+YO = yo.api(YO_API_KEY)
+
 
 def check_button(state):
   # Read state from GPIO.
@@ -17,9 +24,17 @@ def check_button(state):
     if gpio == 1:
       conn.request('POST', API_ENDPOINT)
       print "Button pressed. Sent door open signal"
+
+      try:
+        YO.yoall()
+        print "Yo!"
+      except:
+        print "Yo API error:"
+        print sys.exc_info()[0]
     else:
       print "Button released."
   return gpio
+
 
 if __name__ == '__main__':
   # Initialize the GPIO.
@@ -28,6 +43,12 @@ if __name__ == '__main__':
 
   # Initialize state to 0.
   state = 0
+
+  try:
+      print "Connected to api.justyo.co. {} people are subscribed!".format(YO.subscribers_count())
+  except KeyError:
+      print "Error connecting to api.justyo.co. Did you remember to put YO_API_KEY in secret.py?"
+      exit(1)
 
   while True:
     # Sleep between checks, and run forever.
