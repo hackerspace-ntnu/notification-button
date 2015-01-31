@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import httplib, time, sys
 
-from yoapi import yo
+from yopy import Yo
 
 from secret import YO_API_KEY
 
@@ -10,7 +10,7 @@ API_HOST = "hackerspace.idi.ntnu.no"
 API_ENDPOINT = "/api/door/push"
 GPIO_PIN = 15 
 
-YO = yo.api(YO_API_KEY)
+YO = Yo(YO_API_KEY)
 
 
 def check_button(state):
@@ -45,7 +45,7 @@ if __name__ == '__main__':
   state = 0
 
   try:
-      print "Connected to api.justyo.co. {} people are subscribed!".format(YO.subscribers_count())
+      print "Connected to api.justyo.co. {} people are subscribed!".format(YO.number())
   except KeyError:
       print "Error connecting to api.justyo.co. Did you remember to put YO_API_KEY in secret.py?"
       exit(1)
